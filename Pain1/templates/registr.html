@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Registr</h2>
+
+<form action="base.html" method="post">
+    <div class="fill-up">
+        <label for="uname">Jmeno</label>
+        <input type="text" placeholder="Vlozde Jmeno" name="uname" required>
+
+        <label for="prijmeni">Přijmeni</label>
+        <input type="text" placeholder="Vlozde Přijmeni" name="prijmeni" required>
+
+        <input type="" id="gender1" name="muž" value="man">
+        <label for="gender1"> Muž</label>
+
+        <input type="checkbox" id="gender2" name="žena" value="woman">
+        <label for="gender2"> Žena</label>
+
+        <label for="psw">Heslo</label>
+        <input type="password" placeholder="Vlozde Heslo" name="psw" required>
+
+        <button type="submit">Login</button>
+    </div>
+</form>
+
+
+{% endblock %}

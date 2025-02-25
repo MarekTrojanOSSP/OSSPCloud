@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type='text/css' rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+
+<header>
+    <h1>Cloud</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Uvodni stranka</a></li>
+            <li><a href="{{ url_for('login') }}">Prihlaseni</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+
+{% block content %}
+{% endblock %}
+
+</main>
+
+</body>
+</html>
