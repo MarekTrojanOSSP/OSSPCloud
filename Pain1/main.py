@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS files (
 def index():
     return render_template('index.html')
 
-@app.route('templates/login')
+@app.route('templates/Login.html')
 def login():
     return render_template('login.html')
 
@@ -83,10 +83,10 @@ def login():
 
         if user:
             session['user_id'] = user[0]
-            return redirect(url_for('upload'))
+            return redirect(url_for('templates/upload.html'))
         else:
             return "Špatné přihlašovací údaje!"
-            return render_template('login.html')
+            return render_template('templates/Login.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -108,7 +108,7 @@ def upload():
     
     cursor.execute("SELECT file_name FROM files WHERE user_id=?", (session['user_id'],))
     files = cursor.fetchall()
-    return render_template('upload.html', files=files)
+    return render_template('templates/upload.html', files=files)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
