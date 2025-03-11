@@ -80,7 +80,6 @@ def login():
 
         cursor.execute("SELECT user_id FROM users WHERE email=? AND password=?", (email, password))
         user = cursor.fetchone()
-        conn.close()
 
         if user:
             session['user_id'] = user[0]
@@ -104,14 +103,10 @@ def upload():
             file_size = os.path.getsize(filepath)
             cursor.execute("INSERT INTO files (user_id, file_name, file_size) VALUES (?, ?, ?)", 
                            (session['user_id'], filename, file_size))
-            conn.commit()
-            conn.close()
     
-    conn = sqlite3.connect("cloud.db")
-    cursor = conn.cursor()
+    
     cursor.execute("SELECT file_name FROM files WHERE user_id=?", (session['user_id'],))
     files = cursor.fetchall()
-    conn.close()
     return render_template('upload.html', files=files)
 
 @app.route('/uploads/<filename>')
@@ -125,11 +120,8 @@ def delete_file(filename):
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     if os.path.exists(filepath):
         os.remove(filepath)
-        conn = sqlite3.connect("cloud.db")
-        cursor = conn.cursor()
         cursor.execute("DELETE FROM files WHERE file_name=? AND user_id=?", (filename, session['user_id']))
         conn.commit()
-        conn.close()
     return redirect(url_for('upload'))
 
 @app.route('/logout')
