@@ -78,8 +78,6 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        conn = sqlite3.connect("cloud.db")
-        cursor = conn.cursor()
         cursor.execute("SELECT user_id FROM users WHERE email=? AND password=?", (email, password))
         user = cursor.fetchone()
         conn.close()
@@ -104,8 +102,6 @@ def upload():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             file_size = os.path.getsize(filepath)
-            conn = sqlite3.connect("cloud.db")
-            cursor = conn.cursor()
             cursor.execute("INSERT INTO files (user_id, file_name, file_size) VALUES (?, ?, ?)", 
                            (session['user_id'], filename, file_size))
             conn.commit()
