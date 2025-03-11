@@ -92,6 +92,50 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        file = request.files['file']
+        if file:
+            filename = file.filename
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            file_size = os.path.getsize(filepath)
+            conn = sqlite3.connect("cloud.db")
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO files (user_id, file_name, file_size) VALUES (?, ?, ?)", 
+                           (session['user_id'], filename, file_size))
+            conn.commit()
+            conn.close()
+    
+    conn = sqlite3.connect("cloud.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT file_name FROM files WHERE user_id=?", (session['user_id'],))
+    files = cursor.fetchall()
+    conn.close()
+    return render_template('upload.html', files=files)
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/delete/<filename>')
+def delete_file(filename):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(filepath):
+        os.remove(filepath)
+        conn = sqlite3.connect("cloud.db")
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM files WHERE file_name=? AND user_id=?", (filename, session['user_id']))
+        conn.commit()
+        conn.close()
+    return redirect(url_for('upload'))
+
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
