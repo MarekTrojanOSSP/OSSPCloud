@@ -8,7 +8,7 @@ UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def init_db():
-    conn = sqlite3.connect("r\C: tvoje absolutní adresa k souboru cloud.db")
+    conn = sqlite3.connect(r"C:\Users\BornyCZE\Documents\python-project-ossp\cloud-project\cloud.db")
     cursor = conn.cursor()
 # Create the 'users' table
     cursor.execute('''
@@ -46,15 +46,15 @@ CREATE TABLE IF NOT EXISTS files (
 
 
 
-@app.route('/')
+@app.route('templates/')
 def index():
     return render_template('index.html')
 
-@app.route('/login')
+@app.route('templates/login')
 def login():
     return render_template('login.html')
 
-@app.route('/registr.html', methods=['GET', 'POST'])
+@app.route('templates/registr.html', methods=['GET', 'POST'])
 def registr():
      if request.method == 'POST':
         username = request.form['username']
@@ -70,13 +70,13 @@ def registr():
 
         return redirect(url_for('login'))  # Přesměrování na přihlášení
 
-@app.route('/Login.html', methods=['GET', 'POST'])
+@app.route('templates/Login.html', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
 
-        conn = sqlite3.connect("rC:\Users\BornyCZE\Documents\python-project-ossp\cloud-projecty\cloud.db")
+        conn = sqlite3.connect(r"C:\Users\BornyCZE\Documents\python-project-ossp\cloud-project\cloud.db")
         cursor = conn.cursor()
         cursor.execute("SELECT user_id FROM users WHERE email=? AND password=?", (email, password))
         user = cursor.fetchone()
@@ -100,7 +100,7 @@ def upload():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             file_size = os.path.getsize(filepath)
-            conn = sqlite3.connect("rC:\Users\BornyCZE\Documents\python-project-ossp\cloud-projecty\cloud.db")
+            conn = sqlite3.connect(r"C:\Users\BornyCZE\Documents\python-project-ossp\cloud-project\cloud.db")
             cursor = conn.cursor()
             cursor.execute("INSERT INTO files (user_id, file_name, file_size) VALUES (?, ?, ?)", 
                            (session['user_id'], filename, file_size))
@@ -121,13 +121,13 @@ def delete_file(filename):
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     if os.path.exists(filepath):
         os.remove(filepath)
-        conn = sqlite3.connect("rC:\Users\BornyCZE\Documents\python-project-ossp\cloud-projecty\cloud.db")
+        conn = sqlite3.connect(r"C:\Users\BornyCZE\Documents\python-project-ossp\cloud-project\cloud.db")
         cursor = conn.cursor()
         cursor.execute("DELETE FROM files WHERE file_name=? AND user_id=?", (filename, session['user_id']))
         conn.commit()
     return redirect(url_for('upload'))
 
-@app.route('/logout')
+@app.route('templates/logout')
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('index'))
