@@ -1,29 +1,18 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link type='text/css' rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}{% endblock %}</title>
-</head>
-<body>
+from flask import Flask, render_template
 
-<header>
-    <h1>Cloud</h1>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('index') }}">Uvodni stranka</a></li>
-            <li><a href="{{ url_for('login') }}">Prihlaseni</a></li>
-        </ul>
-    </nav>
-</header>
+app = Flask(__name__)
 
-<main>
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-{% block content %}
-{% endblock %}
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
-</main>
+@app.route('/registr.html')
+def registr():
+    return render_template('registr.html')
 
-</body>
-</html>
+if __name__ == '__main__':
+    app.run(debug=True)
