@@ -8,7 +8,7 @@ UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def init_db():
-    conn = sqlite3.connect("rC:\Users\BornyCZE\Documents\python-project-ossp\cloud-projecty\cloud.db")
+    conn = sqlite3.connect("r\C: tvoje absolutní adresa k souboru cloud.db")
     cursor = conn.cursor()
 # Create the 'users' table
     cursor.execute('''
