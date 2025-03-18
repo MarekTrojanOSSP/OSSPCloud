@@ -46,15 +46,11 @@ CREATE TABLE IF NOT EXISTS files (
 
 
 
-@app.route('templates/')
+@app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('templates/Login.html')
-def login():
-    return render_template('login.html')
-
-@app.route('templates/registr.html', methods=['GET', 'POST'])
+@app.route('/registr', methods=['GET', 'POST'])
 def registr():
      if request.method == 'POST':
         username = request.form['username']
@@ -70,7 +66,7 @@ def registr():
 
         return redirect(url_for('login'))  # Přesměrování na přihlášení
 
-@app.route('templates/Login.html', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
@@ -83,10 +79,9 @@ def login():
 
         if user:
             session['user_id'] = user[0]
-            return redirect(url_for('templates/upload.html'))
-        else:
-            return "Špatné přihlašovací údaje!"
-            return render_template('templates/Login.html')
+            return redirect(url_for(upload))
+    else:
+        return render_template('login.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -108,7 +103,7 @@ def upload():
     
     cursor.execute("SELECT file_name FROM files WHERE user_id=?", (session['user_id'],))
     files = cursor.fetchall()
-    return render_template('templates/upload.html', files=files)
+    return render_template('upload.html', files=files)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -127,7 +122,7 @@ def delete_file(filename):
         conn.commit()
     return redirect(url_for('upload'))
 
-@app.route('templates/logout')
+@app.route('/logout')
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('index'))
