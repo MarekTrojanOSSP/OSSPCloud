@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Log in</h2>
+
+<form method="post">
+    <div class="fill-up">
+        <label for="uname">User</label>
+        <input type="text"  placeholder="Vlozde username" name="username" required>
+
+        <br>
+
+        <label for="psw">Heslo</label>
+        <input type="password" placeholder="Vlozde Heslo" name="psw" required>
+
+        <button type="submit">Login</button>
+    </div>
+    <p>OR</p>
+    <div>
+        <label for="mail">Email</label>
+        <input type="text" placeholder="Zadejte email" name="email">
+
+        <button type="submit">Login from email</button>
+    </div>
+</form>
+
+<p>Pokud nemáte účet.</p>
+<h2><a href="{{ url_for('registr') }}">Registrace</a></h2>
+
+
+{% endblock %}
+

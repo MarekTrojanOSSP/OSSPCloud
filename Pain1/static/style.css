@@ -60,7 +60,12 @@ input {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+.agree{
 
+    text-align: left;
+    font-weight: bold;
+    margin-top: 10px;
+}
 button {
     background-color: #28a745;
     color: white;
