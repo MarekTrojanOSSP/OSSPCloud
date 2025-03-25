@@ -53,10 +53,6 @@ CREATE TABLE IF NOT EXISTS files (
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/')
-def index2():
-    return render_template('index2.html')
 @app.route('/neco')
 def neco():
     return render_template('neco.html')
@@ -88,7 +84,7 @@ def login():
         conn = sqlite3.connect("cloud.db")
 
         cursor = conn.cursor()
-        cursor.execute("SELECT username FROM users WHERE email=? AND password=?", (email, password))
+        cursor.execute("SELECT email, password FROM users WHERE email=? AND password=?", (email, password))
         user = cursor.fetchone()
 
         if user:
@@ -97,9 +93,8 @@ def login():
     else:
         return render_template('login.html')
 
-
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
+    return redirect(url_for('upload'))
+    return render_template('login.html')
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
