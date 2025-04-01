@@ -16,34 +16,22 @@ def init_db():
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 """)
 
-    # Create the 'files' table
-    cursor.execute("""
-CREATE TABLE IF NOT EXISTS files (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    file_name TEXT NOT NULL,
-    file_size INTEGER NOT NULL,  -- Size in bytes
-    upload_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id)
-);
-""")
 
     # Commit changes and close the connection
     """conn.commit()
 
     # Optionally, insert some sample data
     cursor.execute(
-        "INSERT INTO users (username, email, password) VALUES ('pan_Mychail', 'michal.bornhorst@student.ossp.cz', 'password')")
+        "INSERT INTO users (username, password) VALUES ('pan_Mychail', 'password')")
     cursor.execute(
-        "INSERT INTO users (username, email, password) VALUES ('pan_Marek', 'marek.trojan@student.ossp.cz', 'password')")
+        "INSERT INTO users (username, password) VALUES ('pan_Marek', 'password')")
     cursor.execute(
-        "INSERT INTO users (username, email, password) VALUES ('pan_Illja', 'illja.perunov@student.ossp.cz', 'password')")
+        "INSERT INTO users (username, password) VALUES ('pan_Illja',  'password')")
     # Commit and close"""
 
     conn.commit()
@@ -61,13 +49,12 @@ def neco():
 def registr():
     if request.method == 'POST':
         username = request.form['username']
-        email = request.form['email']
         password = request.form['password']
 
         conn = sqlite3.connect("cloud.db")
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                       (username, email, password))
+        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)",
+                       (username, password))
         conn.commit()
         conn.close()
 
@@ -78,65 +65,46 @@ def registr():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        username = request.form['username']
         password = request.form['psw']
+
 
         conn = sqlite3.connect("cloud.db")
 
         cursor = conn.cursor()
-        cursor.execute("SELECT email, password FROM users WHERE email=? AND password=?", (email, password))
-        user = cursor.fetchone()
+
+        user = "";
+
+        try:
+            # Execute query
+            cursor.execute("SELECT username, password FROM users")
+
+            # Fetch results
+            user = cursor
+
+            if user:
+                print("User found:", user)
+            else:
+                print("No user found with those credentials")
+
+        except sqlite3.Error as e:
+            print("Database error:", e)
+        finally:
+            # Close connection
+            conn.close()
+
 
         if user:
-            session['user_id'] = user[0]
-            return redirect(url_for(upload))
+            session['username'] = user[0]
+            return redirect(url_for("neco"))
+        else:
+            return render_template('login.html')
     else:
         return render_template('login.html')
 
-    return redirect(url_for('upload'))
-    return render_template('login.html')
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    if request.method == 'POST':
-        file = request.files['file']
-        if file:
-            filename = file.filename
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            file_size = os.path.getsize(filepath)
-            conn = sqlite3.connect("cloud.db")
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO files (user_id, file_name, file_size) VALUES (?, ?, ?)",
-                           (session['user_id'], filename, file_size))
-
-    cursor.execute("SELECT file_name FROM files WHERE user_id=?", (session['user_id'],))
-    files = cursor.fetchall()
-    return render_template('upload.html', files=files)
-
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-
-@app.route('/delete/<filename>')
-def delete_file(filename):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    if os.path.exists(filepath):
-        os.remove(filepath)
-        conn = sqlite3.connect("cloud.db")
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM files WHERE file_name=? AND user_id=?", (filename, session['user_id']))
-        conn.commit()
-    return redirect(url_for('upload'))
-
-
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)
+    session.pop('username', None)
     return redirect(url_for('index'))
 
 
