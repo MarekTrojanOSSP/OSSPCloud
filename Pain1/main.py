@@ -5,8 +5,8 @@ import os
 app=Flask(__name__)
 
 
-USERNAME = "test"
-PASSWORD = "test"
+USERNAME = "administrator_of_the_cloud"
+PASSWORD = "4dm1n1str4t0r_0f_th3_cl0ud"
 
 @app.route("/login",methods=['GET','POST'])
 def login():
